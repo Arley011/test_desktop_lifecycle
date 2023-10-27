@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_desktop_sleep/flutter_desktop_sleep.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,15 @@ class _MyHomePageState extends State<MyHomePage> {
     _appLifecycleListener = AppLifecycleListener(
       onStateChange: _onStateChanged,
     );
+
+    // Initialize plugin's listener
+    FlutterDesktopSleep flutterDesktopSleep = FlutterDesktopSleep();
+    flutterDesktopSleep.setWindowSleepHandler((String? s) async {
+      _statusesListNotifier.value = [
+        ..._statusesListNotifier.value,
+        '${DateTime.now().toIso8601String()} -> FlutterDesktopSleep plugin -> $s',
+      ];
+    });
   }
 
   @override
@@ -55,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onStateChanged(AppLifecycleState state) {
     _statusesListNotifier.value = [
       ..._statusesListNotifier.value,
-      '${DateTime.now().toIso8601String()} -> ${state.name}',
+      '${DateTime.now().toIso8601String()} -> AppLifecycleListener -> ${state.name}',
     ];
     switch (state) {
       case AppLifecycleState.detached:
